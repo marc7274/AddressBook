@@ -9,7 +9,7 @@ public class Rubrica {
 	private ArrayList<Contatto> contatti = new ArrayList<Contatto>();
 	private String ln;
 	private String[] ln_s;
-
+	
 	public Rubrica(String path) throws IOException {
 		myFile = new File(path);
 		if (myFile.createNewFile()) {
@@ -85,23 +85,26 @@ public class Rubrica {
 			System.out.println("Cogome: " + contatti.get(i).cognome);
 			System.out.println("Telefono: " + Integer.toString(contatti.get(i).telefono));
 			System.out.println("Email: " + contatti.get(i).email);
-			System.out.println();
 		}
 	}
-
+	
 	public void save() throws IOException {
 		FileWriter myWriter = new FileWriter(myFile.getAbsolutePath());
 		int i;
+		myWriter.write("[");
 		for (i = 0; i < contatti.size(); i++) {
-			myWriter.write(contatti.get(i).nome);
-			myWriter.write(";");
-			myWriter.write(contatti.get(i).cognome);
-			myWriter.write(";");
-			myWriter.write(Integer.toString(contatti.get(i).telefono));
-			myWriter.write(";");
-			myWriter.write(contatti.get(i).email);
-			myWriter.write("\r\n");
+			if (i!=0) myWriter.write(",");
+			myWriter.write("{\"nome\":\""+contatti.get(i).nome+"\"");
+			myWriter.write(",");
+			myWriter.write("\"cognome\":\""+contatti.get(i).cognome+"\"");
+			myWriter.write(",");
+			myWriter.write("\"telefono\":"+Integer.toString(contatti.get(i).telefono));
+			myWriter.write(",");
+			myWriter.write("\"email\":\""+contatti.get(i).email+"\"");
+			myWriter.write("}");
 		}
+		myWriter.write("]");
 		myWriter.close();
 	}
 }
+//ciao.txt add Leo Nardo 183 no add Dona Tello 729 forse .

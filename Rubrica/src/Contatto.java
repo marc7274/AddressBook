@@ -1,4 +1,3 @@
-
 public class Contatto {
 	String nome;
 	String cognome;
