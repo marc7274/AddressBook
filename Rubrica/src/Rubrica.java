@@ -5,10 +5,11 @@ import java.util.Scanner;
 import java.io.FileWriter;
 
 public class Rubrica {
-
 	private File myFile;
-	
-	private ArrayList<String> contatti = new ArrayList<String>();
+	private ArrayList<Contatto> contatti = new ArrayList<Contatto>();
+	private String ln;
+	private String[] ln_s;
+
 	public Rubrica(String path) throws IOException {
 		myFile = new File(path);
 		if (myFile.createNewFile()) {
@@ -17,56 +18,88 @@ public class Rubrica {
 			System.out.println("File " + myFile.getName() + " opened.");
 			Scanner myReader = new Scanner(myFile);
 			while (myReader.hasNextLine()) {
-				contatti.add(myReader.nextLine());
+				ln = myReader.nextLine();
+				ln_s = ln.split(";");
+				contatti.add(new Contatto(ln_s[0], ln_s[1], Integer.parseInt(ln_s[2]), ln_s[3]));
 			}
 			System.out.println(myFile.getAbsolutePath());
-			System.out.println(contatti);
+			System.out.println("Sono presenti " + Integer.toString(contatti.size()) + " contatti.");
 			myReader.close();
 		}
 		System.out.println();
 	}
 
-	public void add(String name, int num) {
-		contatti.add(name + " " + Integer.toString(num));
+	public void add(String nome, String cognome, int telefono, String email) {
+		contatti.add(new Contatto(nome, cognome, telefono, email));
 	}
 
-	public void show_list() {
+	public void remove(String nome, String cognome) {
 		int i;
-		for (i = 0; i < contatti.size(); i++)
-			System.out.println(contatti.get(i));
-	}
-
-	public void remove(String rmname) {
-		int i;
-		String name;
 		for (i = 0; i < contatti.size(); i++) {
-			name = contatti.get(i).split(" ")[0];
-			if (name.equals(rmname)) {
+			if (nome.equals(contatti.get(i).nome) && cognome.equals(contatti.get(i).cognome)) {
 				contatti.remove(i);
 			}
 		}
 	}
-
-	public int get_number(String shname) {
+	
+	public void change_email(String nome,String cognome,String new_email) {
 		int i;
-		String name;
-		int num = -1;
 		for (i = 0; i < contatti.size(); i++) {
-			name = contatti.get(i).split(" ")[0];
-			if (name.equals(shname)) {
-				num = Integer.parseInt(contatti.get(i).split(" ")[1]);
+			if (nome.equals(contatti.get(i).nome) &&  cognome.equals(contatti.get(i).cognome)) {
+				contatti.get(i).email = new_email;
 			}
 		}
-		return num;
+	}
+	
+	public void get_telefono(String nome,String cognome) {
+		int i;
+		for (i = 0; i < contatti.size(); i++) {
+			if (nome.equals(contatti.get(i).nome) && cognome.equals(contatti.get(i).cognome)) {
+				System.out.println(contatti.get(i).telefono);
+			}
+		}
 	}
 
-	public void save() throws IOException
-	{
+	public void get_email(String nome, String cognome) {
+		int i;
+		for (i = 0; i < contatti.size(); i++) {
+			if (nome.equals(contatti.get(i).nome) && cognome.equals(contatti.get(i).cognome)) {
+				System.out.println(contatti.get(i).email);
+			}
+		}
+	}
+
+	public void change_number(String nome, String cognome, int new_num) {
+		int i;
+		for (i = 0; i < contatti.size(); i++) {
+			if (nome.equals(contatti.get(i).nome) && cognome.equals(contatti.get(i).cognome)) {
+				contatti.get(i).telefono = new_num;
+			}
+		}
+	}
+
+	public void showlist() {
+		int i;
+		for (i = 0; i < contatti.size(); i++) {
+			System.out.println("Nome: " + contatti.get(i).nome);
+			System.out.println("Cogome: " + contatti.get(i).cognome);
+			System.out.println("Telefono: " + Integer.toString(contatti.get(i).telefono));
+			System.out.println("Email: " + contatti.get(i).email);
+			System.out.println();
+		}
+	}
+
+	public void save() throws IOException {
 		FileWriter myWriter = new FileWriter(myFile.getAbsolutePath());
 		int i;
-		for (i = 0; i < contatti.size(); i++)
-		{
-			myWriter.write(contatti.get(i));
+		for (i = 0; i < contatti.size(); i++) {
+			myWriter.write(contatti.get(i).nome);
+			myWriter.write(";");
+			myWriter.write(contatti.get(i).cognome);
+			myWriter.write(";");
+			myWriter.write(Integer.toString(contatti.get(i).telefono));
+			myWriter.write(";");
+			myWriter.write(contatti.get(i).email);
 			myWriter.write("\r\n");
 		}
 		myWriter.close();
