@@ -3,25 +3,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.FileWriter;
+import com.google.gson.*;
+import java.util.Arrays;
 
 public class Rubrica {
 	private File myFile;
-	private ArrayList<Contatto> contatti = new ArrayList<Contatto>();
-	private String ln;
-	private String[] ln_s;
-	
+	ArrayList<Contatto> contatti = new ArrayList<Contatto>();
+
 	public Rubrica(String path) throws IOException {
+		String json;
 		myFile = new File(path);
+
 		if (myFile.createNewFile()) {
 			System.out.println("File created: " + myFile.getName());
 		} else {
 			System.out.println("File " + myFile.getName() + " opened.");
 			Scanner myReader = new Scanner(myFile);
-			while (myReader.hasNextLine()) {
-				ln = myReader.nextLine();
-				ln_s = ln.split(";");
-				contatti.add(new Contatto(ln_s[0], ln_s[1], Integer.parseInt(ln_s[2]), ln_s[3]));
-			}
+			json = myReader.nextLine();
+			Contatto[] contatti_arr = new Gson().fromJson(json, Contatto[].class);
+			contatti = new ArrayList<>(Arrays.asList(contatti_arr));
+			System.out.println(new Gson().toJson(contatti));
 			System.out.println(myFile.getAbsolutePath());
 			System.out.println("Sono presenti " + Integer.toString(contatti.size()) + " contatti.");
 			myReader.close();
@@ -41,17 +42,17 @@ public class Rubrica {
 			}
 		}
 	}
-	
-	public void change_email(String nome,String cognome,String new_email) {
+
+	public void change_email(String nome, String cognome, String new_email) {
 		int i;
 		for (i = 0; i < contatti.size(); i++) {
-			if (nome.equals(contatti.get(i).nome) &&  cognome.equals(contatti.get(i).cognome)) {
+			if (nome.equals(contatti.get(i).nome) && cognome.equals(contatti.get(i).cognome)) {
 				contatti.get(i).email = new_email;
 			}
 		}
 	}
-	
-	public void get_telefono(String nome,String cognome) {
+
+	public void get_telefono(String nome, String cognome) {
 		int i;
 		for (i = 0; i < contatti.size(); i++) {
 			if (nome.equals(contatti.get(i).nome) && cognome.equals(contatti.get(i).cognome)) {
@@ -87,24 +88,11 @@ public class Rubrica {
 			System.out.println("Email: " + contatti.get(i).email);
 		}
 	}
-	
+
 	public void save() throws IOException {
 		FileWriter myWriter = new FileWriter(myFile.getAbsolutePath());
-		int i;
-		myWriter.write("[");
-		for (i = 0; i < contatti.size(); i++) {
-			if (i!=0) myWriter.write(",");
-			myWriter.write("{\"nome\":\""+contatti.get(i).nome+"\"");
-			myWriter.write(",");
-			myWriter.write("\"cognome\":\""+contatti.get(i).cognome+"\"");
-			myWriter.write(",");
-			myWriter.write("\"telefono\":"+Integer.toString(contatti.get(i).telefono));
-			myWriter.write(",");
-			myWriter.write("\"email\":\""+contatti.get(i).email+"\"");
-			myWriter.write("}");
-		}
-		myWriter.write("]");
+		myWriter.write(new Gson().toJson(contatti));
 		myWriter.close();
 	}
 }
-//ciao.txt add Leo Nardo 183 no add Dona Tello 729 forse .
+// ciaociaociaociao.json add Leo Nardo 183 no add Dona Tello 729 forse .
